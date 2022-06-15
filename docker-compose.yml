@@ -14,7 +14,7 @@ services:
     volumes:
       - ./api/api-config.yml:/opt/PRISON-API/config/database.yml
     ports:
-      - "3005:3005"
+      - "3005:3000"
     depends_on:
       - prisondb
     links:

@@ -7,7 +7,7 @@ import os.path
 import re
 import sys
 
-FOLLOW_TAGS = True
+FOLLOW_TAGS = False
 OFFLINE = False
 REBUILD_FRONTEND = False
 SYSTEMD_CONFIG = True   # Configure systemd to autostart the prison application
@@ -48,6 +48,9 @@ def update_repo(repository, branch='master', tag=None):
     run('git checkout -f {}'.format(branch))
     run('git pull --rebase=false -f origin {}'.format(branch))
 
+    if os.path.exists('Gemfile.lock'):
+        run('rm Gemfile.lock')
+
     if FOLLOW_TAGS:
         run('git checkout -f {}'.format(get_tag()))
 
@@ -72,7 +75,10 @@ def build_prison_frontend(follow_tags):
     run('npm install')
     run('npm run build')
     os.chdir('../..')
-    run('rm -Rv web/static/*')
+    if not os.path.exists('web/static/'):
+        os.mkdir('web/static/')
+    else:
+        run('rm -Rv web/static/*')
     run('cp -Rv tmp/prisonemr/www/* web/static')
     print('-----------------')
 
@@ -290,9 +296,9 @@ def build():
         setup_dependencies()
         tags = {}
         tags['PRISON-API'] = update_repo('https://github.com/EGPAFMalawiHIS/prisonemr_backend.git', branch='master')
-        os.chdir('tmp/PRISON-API')
-        run('git describe > HEAD')
-        os.chdir('../..')
+        # os.chdir('tmp/prisonemr_backend')
+        # run('git describe > HEAD')
+        # os.chdir('../..')
 
         tags['PRISON-EMR'] = update_repo('https://github.com/EGPAFMalawiHIS/prisonemr.git', branch='main')
         build_prison_frontend(False)
