@@ -288,8 +288,8 @@ def build():
 
     if not OFFLINE:
         setup_dependencies()
-        tags['BHT-EMR-API'] = update_repo('https://github.com/HISMalawi/BHT-EMR-API.git', branch='development', tag=tags.get('BHT-EMR-API'))
-        os.chdir('tmp/BHT-EMR-API')
+        tags['PRISON-API'] = update_repo('https://github.com/HISMalawi/PRISON-API.git', branch='development', tag=tags.get('PRISON-API'))
+        os.chdir('tmp/PRISON-API')
         run('git describe > HEAD')
         os.chdir('../..')
         
