@@ -5,10 +5,10 @@ RUN apt-get install build-essential default-mysql-client default-libmysqlclient-
 
 RUN mkdir /opt/PRISON-API
 WORKDIR /opt/PRISON-API
-COPY tmp/PRISON-API/Gemfile /opt/PRISON-API/Gemfile
-COPY tmp/PRISON-API/vendor /opt/PRISON-API/vendor
+COPY tmp/prisonemr_backend/Gemfile /opt/PRISON-API/Gemfile
+COPY tmp/prisonemr_backend/vendor /opt/PRISON-API/vendor
 RUN bundle install --local
-COPY tmp/PRISON-API /opt/PRISON-API
+COPY tmp/prisonemr_backend /opt/PRISON-API
 
 COPY api/bin/initialize_database.sh /usr/bin/initialize_database.sh
 RUN chmod +x /usr/bin/initialize_database.sh
