@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 services:
   prisondb:
     image: mysql:5.6
@@ -15,10 +15,6 @@ services:
       - ./api/api-config.yml:/opt/PRISON-API/config/database.yml
     ports:
       - "3005:3000"
-    depends_on:
-      - prisondb
-    links:
-      - prisondb:prisondb
     environment:
       WEB_CONCURRENCY: 6
       RAILS_MAX_THREADS: 5
