@@ -7,10 +7,10 @@ import os.path
 import re
 import sys
 
-FOLLOW_TAGS = True
+FOLLOW_TAGS = False
 OFFLINE = False
 REBUILD_FRONTEND = False
-SYSTEMD_CONFIG = True   # Configure systemd to autostart the emastercard application
+SYSTEMD_CONFIG = True   # Configure systemd to autostart the prison application
 UPDATE = False
 
 def run(command, die_on_fail=True):
@@ -48,6 +48,9 @@ def update_repo(repository, branch='master', tag=None):
     run('git checkout -f {}'.format(branch))
     run('git pull --rebase=false -f origin {}'.format(branch))
 
+    if os.path.exists('Gemfile.lock'):
+        run('rm Gemfile.lock')
+
     if FOLLOW_TAGS:
         run('git checkout -f {}'.format(get_tag()))
 
@@ -65,18 +68,21 @@ def read_tag(repo):
     else:
         return None
 
-def build_emastercard_frontend(follow_tags):
+def build_prison_frontend(follow_tags):
     print('Building Prison EMR frontend; this may take a while...')
-    update_emastercard_frontent_config(follow_tags=follow_tags)
-    os.chdir('tmp/e-Mastercard')
+    # update_prison_frontend_config(follow_tags=follow_tags)
+    os.chdir('tmp/prisonemr')
     run('npm install')
     run('npm run build')
     os.chdir('../..')
-    run('rm -Rv web/static/*')
-    run('cp -Rv tmp/e-Mastercard/dist/* web/static')
+    if not os.path.exists('web/static/'):
+        os.mkdir('web/static/')
+    else:
+        run('rm -Rv web/static/*')
+    run('cp -Rv tmp/prisonemr/www/* web/static')
     print('-----------------')
 
-def update_emastercard_frontent_config(deploy_path='tmp/e-Mastercard/public/config.json', follow_tags=True):
+def update_prison_frontend_config(deploy_path='tmp/Prison-EMR/public/config.json', follow_tags=True):
     def get_latest_commit_id():
         return read_gitcmd_output('.', 'log').split()[1]
                          
@@ -94,7 +100,7 @@ def update_emastercard_frontent_config(deploy_path='tmp/e-Mastercard/public/conf
     config['version'] = 'docker-{}'.format(version)
     save_frontend_config(config)
 
-IMAGE_NAMES = ['emastercard_api', 'nginx', 'mysql']
+IMAGE_NAMES = ['prison_api', 'nginx', 'mysql']
 
 def make_offline_package():
     print('Dumping docker images...')
@@ -105,10 +111,10 @@ def make_offline_package():
         print('Dumping image {}'.format(name))
         run('sudo docker save {name} -o tmp/images/{name}'.format(name=name))
         
-    print('Packaging to emastercard.tgz...')
-    run("sudo bash -c 'tar -czvf tmp/emastercard-upgrade-automation.tgz $(git ls-files) tmp/images/ .git/'")
-    run('sudo chmod a+rw tmp/emastercard-upgrade-automation.tgz')
-    print('Package successfully created at tmp/emastercard-upgrade-automation.tgz')
+    print('Packaging to prison.tgz...')
+    run("sudo bash -c 'tar -czvf tmp/prison-upgrade-automation.tgz $(git ls-files) tmp/images/ .git/'")
+    run('sudo chmod a+rw tmp/prison-upgrade-automation.tgz')
+    print('Package successfully created at tmp/prison-upgrade-automation.tgz')
 
 def load_images():
     print("Looking for local docker images...")
@@ -157,7 +163,7 @@ def setup_dependencies():
 
 SYSTEMD_SERVICE_TEMPLATE = '''
 [Unit]
-Description = Emastercard web service
+Description = Prison EMR web service
 After       = network.target
 
 [Service]
@@ -179,22 +185,22 @@ WantedBy    = multi-user.target
 '''
 
 def setup_autostart():
-    print('Setting up emastercard autostart: tmp/emastercard.service')
-    with open('tmp/emastercard.service', 'w') as service_file:
+    print('Setting up prison autostart: tmp/prison.service')
+    with open('tmp/prison.service', 'w') as service_file:
         service_file.write(SYSTEMD_SERVICE_TEMPLATE.format(install_dir=os.getcwd()))
 
-    run('sudo systemctl stop emastercard.service', die_on_fail=False)
-    run('sudo cp tmp/emastercard.service /etc/systemd/system')
-    run('sudo systemctl enable emastercard.service')
-    print('eMastercard has been set to automatically start up at boot time.')
+    run('sudo systemctl stop prison.service', die_on_fail=False)
+    run('sudo cp tmp/prison.service /etc/systemd/system')
+    run('sudo systemctl enable prison.service')
+    print('prison has been set to automatically start up at boot time.')
 
     if os.path.isfile('api/api-config.yml'):
-        run('sudo systemctl start emastercard.service')
-        print("Application started... Go to http://localhost:8000 to verify if application is up")
+        run('sudo systemctl start prison.service')
+        print("Application started... Go to http://localhost:8080 to verify if application is up")
     else:
         print("Warning: Application not started due to missing configuration files: api/api-config.yml")
         print("=> Please create the configuration file by copying api/api-config.yml.example and then editing the copied file accordingly")
-        print("=> Run `sudo systemctl start emastercard.service` to start the application")
+        print("=> Run `sudo systemctl start prison.service` to start the application")
 
 def load_version_info():
     import json
@@ -251,11 +257,11 @@ def get_host_address():
     except (ValueError, IndexError):
         return '127.0.0.1'
 
-def generate_emastercard_config(emastercard_version, autodetect_host_address=False):
+def generate_prison_config(prison_version, autodetect_host_address=False):
     with open('web/config.json') as config_template:
         with open('web/static/config.json', 'w') as config_file:
             config = json.loads(config_template.read())
-            config['version'] = emastercard_version
+            config['version'] = prison_version
             config['apiURL'] = get_host_address() if autodetect_host_address else '127.0.0.1'
 
             config_file.write(json.dumps(config))
@@ -264,49 +270,48 @@ def generate_emastercard_config(emastercard_version, autodetect_host_address=Fal
 
 def configure_host_address():
     print('Configuring host address...')
-    config = generate_emastercard_config(load_version_info()['version'], autodetect_host_address=True)
+    config = generate_prison_config(load_version_info()['version'], autodetect_host_address=True)
     print("Updated host address in web/static/config.json to {}".format(config['apiURL']))
    
 def build():
     if os.path.exists('tmp/db'):
         # Had database files in directory users may consider clearing.
         # Have to move to somewhere somewhat secure.
-        print('Moving database directory to /opt/emastercard...')
-        run('sudo systemctl stop emastercard', die_on_fail=False)
+        print('Moving database directory to /opt/prison...')
+        run('sudo systemctl stop prison', die_on_fail=False)
 
-        if not os.path.exists('/opt/emastercard'):
-            run('sudo mkdir /opt/emastercard')
+        if not os.path.exists('/opt/prison'):
+            run('sudo mkdir /opt/prison')
 
-        run('sudo mv tmp/db /opt/emastercard')
+        run('sudo mv tmp/db /opt/prison')
 
     if not os.path.exists('tmp'):
         os.mkdir('tmp')
 
     version_info = load_version_info()
     version = version_info.get('version')
-    tags = version_info.get('tags', {})
+    # tags = version_info.get('tags', {})
 
     if not OFFLINE:
         setup_dependencies()
-        tags['BHT-EMR-API'] = update_repo('https://github.com/HISMalawi/BHT-EMR-API.git', branch='development', tag=tags.get('BHT-EMR-API'))
-        os.chdir('tmp/BHT-EMR-API')
-        run('git describe > HEAD')
-        os.chdir('../..')
-        
-        tags['eMastercard2Nart'] = update_repo('https://github.com/HISMalawi/eMastercard2Nart.git', branch='master', tag=tags.get('eMastercard2Nart'))
-        if REBUILD_FRONTEND:
-            tags['e-Mastercard'] = update_repo('https://github.com/EGPAFMalawiHIS/e-Mastercard.git', branch='development', tag=tags.get('e-Mastercard'))
-            build_emastercard_frontend(FOLLOW_TAGS)
+        tags = {}
+        tags['PRISON-API'] = update_repo('https://github.com/EGPAFMalawiHIS/prisonemr_backend.git', branch='master')
+        # os.chdir('tmp/prisonemr_backend')
+        # run('git describe > HEAD')
+        # os.chdir('../..')
 
-        if UPDATE:
-            version = update_version(version, tags)
-            save_version_info({'version': version, 'tags': tags})
+        tags['PRISON-EMR'] = update_repo('https://github.com/EGPAFMalawiHIS/prisonemr.git', branch='main')
+        build_prison_frontend(False)
+
+        # if UPDATE:
+        #     version = update_version(version, tags)
+        #     save_version_info({'version': version, 'tags': tags})
             
         build_docker_container()
     else:
         load_images()
 
-    generate_emastercard_config(version)
+    generate_prison_config(version)
 
     if SYSTEMD_CONFIG:
         setup_autostart()
