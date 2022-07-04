@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   prisondb:
-    image: mysql:5.6
+    image: mysql:5.7
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: password
@@ -9,7 +9,7 @@ services:
       - /opt/prison/db:/var/lib/mysql
     ports:
       - "3308:3306"
-  api:
+  prisonbackend:
     build: .
     image: prison_api
     # command: bash -c "cd /opt/BHT-EMR-API && rm -f tmp/pids/server.pid && bundle exec rails s -b 0.0.0.0"
@@ -17,7 +17,7 @@ services:
       - ./api/api-config.yml:/opt/BHT-EMR-API/config/database.yml
     ports:
       - "3005:3000"
-  web:
+  prisonfrontend:
     image: nginx
     volumes:
       - ./web/static:/opt/emastercard

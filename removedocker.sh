@@ -1,5 +1,5 @@
 # first of all do a backup of the database
-sudo docker-compose exec api backup_database.sh > backup.sql
+sudo docker-compose exec prisonbackend backup_database.sh > backup.sql
 # we need to stop the service here
 sudo systemctl stop prison
 # we need to disable the service here
