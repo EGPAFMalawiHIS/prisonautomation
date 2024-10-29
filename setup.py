@@ -72,7 +72,7 @@ def build_prison_frontend(follow_tags):
     print('Building Prison EMR frontend; this may take a while...')
     # update_prison_frontend_config(follow_tags=follow_tags)
     os.chdir('tmp/prisonemr')
-    run('npm install')
+    run('npm install --legacy-peer-deps')
     run('npm run build')
     os.chdir('../..')
     if not os.path.exists('web/static/'):
