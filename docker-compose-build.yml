@@ -27,15 +27,6 @@ services:
   mysqldumper:
     image: mysql:8.0
     volumes:
-      - "${HOME}/Public:/backups" 
-    entrypoint: >
-      /bin/sh -c "
-      while true; do
-        if mysqldump -h prisondb -uroot -ppassword --no-tablespaces --skip-lock-tables openmrs_prison |
-        gzip > /backups/prisonemr_dump-$(date +'%Y-%m-%d').sql.gz; then
-          find /backups -type f -name '*.sql.gz' -mtime +7 -delete
-        else
-          echo 'Backup failed at $(date)' >&2
-        fi
-        sleep 86400;
-      done"
+      - "${HOME}/Public:/backups"
+      - "./backup.sh:/backup.sh"
+    entrypoint: ["/bin/sh", "/backup.sh"]
