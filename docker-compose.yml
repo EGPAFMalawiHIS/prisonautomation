@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   prisondb:
-    image: mysql:8.o
+    image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: password
