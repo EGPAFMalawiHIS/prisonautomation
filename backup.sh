@@ -16,10 +16,12 @@ BACKUP_FILE="$BACKUP_DIR/$(date +%Y-%m-%d)-$DATABASE.sql.gz"
 
 # Perform the backup
 if mysqldump --user=$USERNAME --password=$PASSWORD --host=$HOST $DATABASE | gzip > $BACKUP_FILE; then
-  echo "Backup successful: $BACKUP_FILE"
+  echo "Backup successfuls: $BACKUP_FILE"
   # Optionally, remove backups older than 7 days (uncomment the next line if needed)
   # find $BACKUP_DIR -type f -name "*.sql.gz" -mtime +7 -exec rm {} \;
 else
   echo "Backup failed" >&2
 fi
+
+
 
