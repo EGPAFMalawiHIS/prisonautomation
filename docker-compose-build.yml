@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   prisondb:
-    image: mysql:5.7
+    image: mysql:8.0
     command: mysqld
     environment:
       MYSQL_ROOT_PASSWORD: password
