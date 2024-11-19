@@ -24,6 +24,9 @@ RUN chmod +x /usr/bin/change_database_password.sh
 COPY api/bin/entrypoint.sh /usr/bin
 RUN chmod +x /usr/bin/entrypoint.sh
 
+COPY ./backup.sh /backup.sh
+RUN chmod +x /backup.sh
+
 ENTRYPOINT [ "entrypoint.sh" ]
 EXPOSE 3000
 
