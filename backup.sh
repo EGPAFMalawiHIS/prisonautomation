@@ -2,26 +2,16 @@
 
 mkdir -p /backups
 
-# Get database credentials from the Rails config
-USERNAME=`ruby -ryaml -e "puts YAML::load_file('/opt/PRISON-API/config/database.yml')['development']['username']"`
-PASSWORD=`ruby -ryaml -e "puts YAML::load_file('/opt/PRISON-API/config/database.yml')['development']['password']"`
-DATABASE=`ruby -ryaml -e "puts YAML::load_file('/opt/PRISON-API/config/database.yml')['development']['database']"`
-HOST=`ruby -ryaml -e "puts YAML::load_file('/opt/PRISON-API/config/database.yml')['development']['host']"`
-
-# Set the backup directory (make sure this is where you want it to be saved)
-BACKUP_DIR="/backups"  # Inside the container, this should be mapped to your host machine's directory (e.g., ~/Public)
-
-# Create backup filename with the current date
-BACKUP_FILE="$BACKUP_DIR/$(date +%Y-%m-%d)-$DATABASE.sql.gz"
-
-# Perform the backup
-if mysqldump --user=$USERNAME --password=$PASSWORD --host=$HOST $DATABASE | gzip > $BACKUP_FILE; then
-  echo "Backup successfuls: $BACKUP_FILE"
-  # Optionally, remove backups older than 7 days (uncomment the next line if needed)
-  # find $BACKUP_DIR -type f -name "*.sql.gz" -mtime +7 -exec rm {} \;
-else
-  echo "Backup failed" >&2
-fi
+while true; do
+  if mysqldump -h prisondb -uroot -ppassword --no-tablespaces --skip-lock-tables openmrs_prison |
+  gzip > /backups/prison_dump-$(date +%Y-%m-%d).sql.gz; then
+    echo "Database dump successfully created at $(date): /backups/prison_dump-$(date +%Y-%m-%d).sql.gz"
+    find /backups -type f -name "*.sql.gz" -mtime +7 -delete
+  else
+    echo "Backup failed at $(date)" >&2
+  fi
+  sleep 86400
+done
 
 
 
