@@ -9,7 +9,7 @@ services:
       - /opt/prison/db:/var/lib/mysql
     ports:
       - "3308:3306"
-  api:
+  prisonbackend:
     build: .
     image: prison_api
     # command: bash -c "cd /opt/BHT-EMR-API && rm -f tmp/pids/server.pid && bundle exec rails s -b 0.0.0.0"
@@ -17,10 +17,16 @@ services:
       - ./api/api-config.yml:/opt/BHT-EMR-API/config/database.yml
     ports:
       - "3005:3000"
-  web:
+  prisonfrontend:
     image: nginx
     volumes:
       - ./web/static:/opt/emastercard
       - ./web/nginx.conf:/etc/nginx/nginx.conf
     ports:
       - "8000:80"
+  mysqldumper:
+    image: mysql:8.0
+    volumes:
+      - "${HOME}/Public:/backups"
+      - "./backup.sh:/backup.sh"
+    entrypoint: ["/bin/sh", "/backup.sh"]
