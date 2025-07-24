@@ -29,15 +29,18 @@ To set up the app locally, follow these steps:
         https://github.com/EGPAFMalawiHIS/prisonautomation.git
 
     2. Navigate to the Project Directory:
-         cd Prisonautomation
+         cd prisonautomation
 
-    3. Rename the file
+    3. Add user rights to the directory
+         sudo chown -R $USER:USER prisonautomation
+
+    4. Rename the file
          api/api-config.yml.example To api/api-config.yml
 
-    3. Run the install file:
+    5. Run the install file:
          python3 ./setup.py
 
-    4. Database Setup:
+    6. Database Setup:
 
 1. RUN: 
    sudo docker ps --all (To see the images running and the ports)
