@@ -54,11 +54,16 @@ To set up the app locally, follow these steps:
 4. Use the command to import database 
    sudo sh -c "pv prison.sql | docker exec -i prisonautomation_prisondb_1 mysql -uuser -ppassword openmrsprison -f"
 
-5. sudo docker exec -it 'prisonautomation_api_1' rails db:migrate
+5. Enter api container using bash by running this command
 
-    OR Enter api container using bash by running this command
-      sudo docker exec -it prisonautomation_api_1 bash
-    Run ==> rails db:migrate
+  sudo docker exec -it prisonautomation_api_1 bash
+
+  Then run these two commands 
+     - run prison script 
+       rails runner bin/prison_table_fix.rb
+
+     - run migration 
+       rails db:migrate
 
 6. Check where the api port is and go change the enviroment file.
 
@@ -68,6 +73,8 @@ To set up the app locally, follow these steps:
       systemctl start docker
       systemctl status docker
       sudo docker container stop prisonautomation_api_1
+      sudo docker exec -it 'prisonautomation_api_1' rails db:migrate
+
 
 Contributing
 
