@@ -75,6 +75,10 @@ To set up the app locally, follow these steps:
       sudo docker container stop prisonautomation_api_1
       sudo docker exec -it 'prisonautomation_api_1' rails db:migrate
 
+8. Container Mysql dumper it dumps the backup database at this location
+
+     Other Locations/Ubuntu/Public
+
 
 Contributing
 
