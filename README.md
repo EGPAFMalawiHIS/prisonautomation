@@ -64,6 +64,10 @@ To set up the app locally, follow these steps:
 
      - run migration 
        rails db:migrate
+```bash
+    When migration breaks just drop the database, create, import, run the script that fix tables and finally run the migration
+  ```
+
 
 6. Check where the api port is and go change the enviroment file.
 
