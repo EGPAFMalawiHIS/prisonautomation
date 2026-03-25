@@ -33,6 +33,7 @@ To set up the app locally, follow these steps:
 
     3. Add user rights to the directory
          sudo chown -R $USER:$USER prisonautomation
+         sudo chown -R $(id -un):$(id -gn) prisonautomation 
 
     4. Rename the file
          api/api-config.yml.example api/api-config.yml
