@@ -30,4 +30,4 @@ RUN chmod +x /backup.sh
 ENTRYPOINT [ "entrypoint.sh" ]
 EXPOSE 3000 3005
 
-CMD ["rails", "s", "-b", "127.0.0.1", "-p", "3005"]
+CMD ["rails", "s", "-b", "0.0.0.0", "-p", "3005"]
