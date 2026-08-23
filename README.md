@@ -36,7 +36,7 @@ To set up the app locally, follow these steps:
          sudo chown -R $(id -un):$(id -gn) prisonautomation 
 
     4. Rename the file
-         api/api-config.yml.example api/api-config.yml
+         cp api/api-config.yml.example api/api-config.yml
 
     5. Run the install file:
          python3 ./setup.py
