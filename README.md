@@ -90,4 +90,17 @@ Contributing
      Feel free to contribute to the development of the vBox App! If you find any issues or have suggestions, please open an issue or submit a pull request.
 
 
+# NOTE
+If your using Mac 
+There is a tool that you can use to create and run Linux containers as lightweight virtual machines on your Mac. It's written in Swift, and optimized for Apple silicon.
 
+Here is the repository
+https://github.com/apple/container
+
+Download and install  the the latest release from this https://github.com/apple/container/releases
+
+Run these command
+1. container system start
+2. container run --rm -it ubuntu bash
+
+Voola! you're actually inside Linux enviroment:
