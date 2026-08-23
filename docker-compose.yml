@@ -14,7 +14,7 @@ services:
     volumes:
       - ./api/api-config.yml:/opt/PRISON-API/config/database.yml
     ports:
-      - "3000:3005"
+      - "3005:3005"
     environment:
       WEB_CONCURRENCY: 6
       RAILS_MAX_THREADS: 5

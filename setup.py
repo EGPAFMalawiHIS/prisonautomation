@@ -129,6 +129,7 @@ def load_images():
 def build_docker_container():
     print('Building docker container...')
     run('sudo docker-compose -f docker-compose-build.yml build --pull')
+    #run('sudo docker compose -f docker-compose-build.yml build --pull')
     print('-----------------')
     
 def check_docker_compose_version(target_version):

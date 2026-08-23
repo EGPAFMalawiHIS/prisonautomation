@@ -47,13 +47,13 @@ To set up the app locally, follow these steps:
    sudo docker ps --all (To see the images running and the ports)
 
 2. Check database availability
-   sudo docker exec -it prisonautomation_prisondb_1 mysql -uuser -ppassword -e 'show databases'
+   sudo docker exec -it prisonautomation_prisondb_1 mysql -uroot -ppassword -e 'show databases'
 
 3. If database is not available enter the mysql and create
-    sudo docker exec -it prisonautomation_prisondb_1 mysql -uuser -ppassword
+    sudo docker exec -it prisonautomation_prisondb_1 mysql -uroot -ppassword
 
 4. Use the command to import database 
-   sudo sh -c "pv prison.sql | docker exec -i prisonautomation_prisondb_1 mysql -uuser -ppassword openmrsprison -f"
+   sudo sh -c "pv prison.sql | docker exec -i prisonautomation_prisondb_1 mysql -uroot -ppassword openmrs_prison -f"
 
 5. Enter api container using bash by running this command
 
@@ -101,6 +101,14 @@ Download and install  the the latest release from this https://github.com/apple/
 
 Run these command
 1. container system start
-2. container run --rm -it ubuntu bash
+2. container run -it --memory 4G --cpus 4 --name ubuntu-dev ubuntu bash
+The everytime u want to start the container run this command
+1. container start -ai ubuntu-dev
+
+If the container is already running and you want to attach to it, use:
+1. container exec -it ubuntu-dev bash
 
 Voola! you're actually inside Linux enviroment:
+
+To check running containers run this command
+1. container ps -a
