@@ -15,6 +15,8 @@ Getting Started
 Install Dependacies first on the machine
    
    1. Here is where you can get node version select install with nvm
+      -first is there is already nvm installed by using the command `which nvm` or `nvm --version`
+        -if yes then skip to step 2
       https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-16-04
 
    2. Set default node
